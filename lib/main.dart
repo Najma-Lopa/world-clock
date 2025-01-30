@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // For date and time formatting
-import 'package:timezone/data/latest.dart' as tz; // For timezone data
-import 'package:timezone/timezone.dart' as tz; // For timezone functionality
+import 'package:intl/intl.dart';
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 
 void main() {
   runApp(MyApp());
@@ -67,13 +67,14 @@ class _WorldClockScreenState extends State<WorldClockScreen> {
   @override
   void initState() {
     super.initState();
-    tz.initializeTimeZones(); // Initialize timezone data
+    tz.initializeTimeZones();
   }
 
   void _convertTime() {
-    if (_fromZone != null && _toZone != null && _timeController.text.isNotEmpty) {
+    if (_fromZone != null &&
+        _toZone != null &&
+        _timeController.text.isNotEmpty) {
       try {
-        // Use 'HH:mm' instead of 'HH:MM'
         final inputTime = DateFormat('HH:mm').parse(_timeController.text);
         final fromTimeZone = tz.getLocation(_fromZone!);
         final toTimeZone = tz.getLocation(_toZone!);
@@ -104,7 +105,6 @@ class _WorldClockScreenState extends State<WorldClockScreen> {
     }
   }
 
-
   void _showDeveloperInfo() {
     showDialog(
       context: context,
@@ -116,15 +116,15 @@ class _WorldClockScreenState extends State<WorldClockScreen> {
             children: [
               CircleAvatar(
                 radius: 40,
-                backgroundImage: AssetImage('assets/IMG_5211.jpg'), // Replace with your image path
+                backgroundImage: AssetImage('assets/IMG_5211.jpg'),
               ),
               SizedBox(height: 16),
               Text(
                 'Name: Najma Akter Lopa\n'
-                    'Institute: Hajee Mohammad Danesh Science and Technology University\n'
-                    'Dept: CSE\n'
-                    'Email: najmalopa@gmail.com\n'
-                    'Phone: 01719131674',
+                'Institute: Hajee Mohammad Danesh Science and Technology University\n'
+                'Dept: CSE\n'
+                'Email: najmalopa@gmail.com\n'
+                'Phone: 01719131674',
                 style: TextStyle(fontSize: 16, color: Colors.teal),
                 textAlign: TextAlign.center,
               ),
@@ -143,169 +143,105 @@ class _WorldClockScreenState extends State<WorldClockScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Colors.deepPurple.shade700,
-                  Colors.pink.shade600,
-                  Colors.orange.shade300
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-            ),
+    return Center(
+      child: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Colors.deepPurple.shade700,
+              Colors.pink.shade600,
+              Colors.orange.shade300
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: Scaffold(
+          backgroundColor: Colors.transparent, // Prevents white screen below
+          extendBody: true, // Extends body to fill screen
+          body: SingleChildScrollView(
             child: Center(
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(20.0),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
+                    Padding(padding: EdgeInsets.all(20)),
                     Text(
                       'WORLD CLOCK',
                       style: TextStyle(
-                        fontSize: 35,
+                        fontSize: 40,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                         letterSpacing: 2,
                       ),
                     ),
-                    SizedBox(height: 24),
-                    Card(
-                      elevation: 10,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      color: Colors.white.withOpacity(0.9),
-                      child: Padding(
-                        padding: const EdgeInsets.all(20.0),
-                        child: Column(
-                          children: [
-                            // From Country
-                            Text(
-                              'From Country:',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.deepPurple.shade800,
-                              ),
-                            ),
-                            SizedBox(height: 8),
-                            DropdownButtonFormField<String>(
-                              decoration: InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
+                    SizedBox(height: 50,width: 20,),
+                    Center(
+                      child: SizedBox(
+                        height: MediaQuery.of(context).size.width * 1.4,
+                        width: MediaQuery.of(context).size.width * 0.9,
+                        child: Card(
+                          elevation: 10,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          color: Colors.white.withOpacity(0.9),
+                          child: Padding(
+                            padding: const EdgeInsets.all(20.0),
+                            child: Column(
+                              children: [
+                                _buildDropdown('From Country:', _fromZone,
+                                    (value) {
+                                  setState(() => _fromZone = value);
+                                }),
+                                SizedBox(height: 16),
+                                _buildTextField(),
+                                SizedBox(height: 16),
+                                _buildDropdown('To Country:', _toZone, (value) {
+                                  setState(() => _toZone = value);
+                                }),
+                                SizedBox(height: 16),
+                                ElevatedButton(
+                                  onPressed: _convertTime,
+                                  style: ElevatedButton.styleFrom(
+                                    padding: EdgeInsets.symmetric(
+                                        vertical: 14, horizontal: 28),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    'Convert Time',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.purple,
+                                    ),
+                                  ),
                                 ),
-                              ),
-                              value: _fromZone,
-                              items: _timeZones.entries.map((entry) {
-                                return DropdownMenuItem(
-                                  value: entry.value,
-                                  child: Text(entry.key),
-                                );
-                              }).toList(),
-                              onChanged: (value) {
-                                setState(() {
-                                  _fromZone = value;
-                                });
-                              },
-                            ),
-                            SizedBox(height: 16),
-                            // Input Time
-                            Text(
-                              'Input Time (HH:MM):',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.deepPurple.shade800,
-                              ),
-                            ),
-                            SizedBox(height: 8),
-                            TextField(
-                              controller: _timeController,
-                              decoration: InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
+                                SizedBox(height: 16),
+                                Text(
+                                  'Converted Time:',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.deepPurple.shade800,
+                                  ),
                                 ),
-                                hintText: 'Enter time (HH:mm)',
-                                hintStyle:
-                                TextStyle(color: Colors.deepPurple.shade300),
-                              ),
-                              keyboardType: TextInputType.datetime,
-                            ),
-                            SizedBox(height: 16),
-                            // To Country
-                            Text(
-                              'To Country:',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.deepPurple.shade800,
-                              ),
-                            ),
-                            SizedBox(height: 8),
-                            DropdownButtonFormField<String>(
-                              decoration: InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
+                                SizedBox(height: 8),
+                                Text(
+                                  _convertedTime,
+                                  style: TextStyle(
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.green.shade700,
+                                  ),
                                 ),
-                              ),
-                              value: _toZone,
-                              items: _timeZones.entries.map((entry) {
-                                return DropdownMenuItem(
-                                  value: entry.value,
-                                  child: Text(entry.key),
-                                );
-                              }).toList(),
-                              onChanged: (value) {
-                                setState(() {
-                                  _toZone = value;
-                                });
-                              },
+                              ],
                             ),
-                            SizedBox(height: 16),
-                            // Convert Time Button
-                            ElevatedButton(
-                              onPressed: _convertTime,
-                              style: ElevatedButton.styleFrom(
-                                padding: EdgeInsets.symmetric(
-                                    vertical: 14, horizontal: 28),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                              ),
-                              child: Text(
-                                'Convert Time',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.purple,
-                                ),
-                              ),
-                            ),
-                            SizedBox(height: 16),
-                            // Converted Time
-                            Text(
-                              'Converted Time:',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.deepPurple.shade800,
-                              ),
-                            ),
-                            SizedBox(height: 8),
-                            Text(
-                              _convertedTime,
-                              style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.green.shade700,
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
                       ),
                     ),
@@ -314,18 +250,40 @@ class _WorldClockScreenState extends State<WorldClockScreen> {
               ),
             ),
           ),
-          // Developer Info Button
-          Positioned(
-            bottom: 16,
-            right: 16,
-            child: FloatingActionButton(
-              onPressed: _showDeveloperInfo,
-              backgroundColor: Colors.deepPurple.shade700,
-              child: Icon(Icons.info),
-            ),
+          floatingActionButton: FloatingActionButton(
+            onPressed: _showDeveloperInfo,
+            backgroundColor: Colors.deepPurple.shade700,
+            child: Icon(Icons.info),
           ),
-        ],
+        ),
       ),
     );
   }
+
+  Widget _buildDropdown(
+      String label, String? value, ValueChanged<String?> onChanged) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label,
+            style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.deepPurple.shade800)),
+        SizedBox(height: 8),
+        DropdownButtonFormField<String>(
+          value: value,
+          items: _timeZones.entries
+              .map((entry) =>
+                  DropdownMenuItem(value: entry.value, child: Text(entry.key)))
+              .toList(),
+          onChanged: onChanged,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTextField() => TextField(
+      controller: _timeController,
+      decoration: InputDecoration(hintText: 'Enter time (HH:mm)'));
 }
